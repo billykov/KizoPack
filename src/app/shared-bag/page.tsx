@@ -24,7 +24,7 @@ export default function SharedBagPage() {
     : shared.filter(i => i.aud === filter || i.aud === 'all');
 
   function handleSave() {
-    router.push(ui.callerRoute || '/home');
+    router.push(ui.callerRoute === '/onboard' ? '/planner' : (ui.callerRoute || '/home'));
   }
 
   function handleBack() {
