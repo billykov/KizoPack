@@ -32,7 +32,7 @@ export default function OnboardPage() {
           <div className="h-1.5 flex-1 rounded-full bg-[#e0e0e0]" />
         </div>
 
-        <h1 className="text-[21px] font-extrabold text-[#1a1a2e] mb-1">👋 ברוך הבא לPackSmart!</h1>
+        <h1 className="text-[21px] font-extrabold text-[#1a1a2e] mb-1">👋 ברוך הבא לKizoPack!</h1>
         <p className="text-sm text-[#888] mb-5">הוסף את בני המשפחה כדי להתחיל — רגע אחד ואתה מוכן</p>
 
         {/* Add member row */}

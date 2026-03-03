@@ -21,7 +21,7 @@ export default function HomePage() {
     <div className="min-h-[100dvh]">
       {/* Header */}
       <div className="pt-[52px] px-5 pb-0 flex items-center justify-between">
-        <div className="text-white text-[18px] font-extrabold">🧳 PackSmart</div>
+        <div className="text-white text-[18px] font-extrabold">🧳 KizoPack</div>
         <div className="flex gap-2 items-center">
           <div
             onClick={() => router.push('/profiles')}

@@ -253,13 +253,13 @@ export const useStore = create<StoreState>()(
 
       resetState: () => {
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('packsmart_v1');
+          localStorage.removeItem('kizopack_v1');
           window.location.href = '/';
         }
       },
     }),
     {
-      name: 'packsmart_v1',
+      name: 'kizopack_v1',
       storage: createJSONStorage(() =>
         typeof window !== 'undefined' ? localStorage : ({} as Storage)
       ),
