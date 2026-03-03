@@ -1,6 +1,6 @@
 {
-  "name": "PackSmart",
-  "short_name": "PackSmart",
+  "name": "KizoPack",
+  "short_name": "KizoPack",
   "description": "רשימת אריזה חכמה לכל המשפחה",
   "start_url": "/",
   "display": "standalone",

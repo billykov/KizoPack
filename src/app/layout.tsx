@@ -2,13 +2,13 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'PackSmart',
+  title: 'KizoPack',
   description: 'רשימת אריזה חכמה לכל המשפחה',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'PackSmart',
+    title: 'KizoPack',
   },
   icons: {
     apple: '/icons/apple-touch-icon.png',
