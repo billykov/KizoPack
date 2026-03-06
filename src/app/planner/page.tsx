@@ -72,10 +72,10 @@ export default function PlannerPage() {
           <div className="h-1.5 flex-1 rounded-full bg-[#667eea]" />
         </div>
 
-        <button onClick={() => router.push('/home')} className="inline-flex items-center gap-1.5 text-[#a78bfa] text-sm font-bold cursor-pointer bg-none border-none p-0 mb-4">← חזור</button>
+        <button onClick={() => router.push('/home')} className="inline-flex items-center gap-1.5 text-[#a78bfa] text-sm font-bold cursor-pointer bg-none border-none p-0 mb-4">→ חזור</button>
 
         <h1 className="text-[21px] font-extrabold text-[#1a1a2e] mb-1">✈️ תכנן טיול</h1>
-        <p className="text-sm text-[#888] mb-5">ספר לי קצת ואני אבנה רשימה מותאמת</p>
+        <p className="text-sm text-[#6b6b6b] mb-5">ספר לי קצת ואני אבנה רשימה מותאמת</p>
 
         {/* Destination */}
         <div className="mb-4">
@@ -95,9 +95,9 @@ export default function PlannerPage() {
           <div className="flex items-center gap-3.5 bg-[#f9f7ff] rounded-[14px] p-3 px-4">
             <span className="flex-1 text-[15px] text-[#333] font-semibold">מספר ימים</span>
             <div className="flex items-center gap-3">
-              <button onClick={() => changeDur(-1)} className="w-[34px] h-[34px] rounded-full bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-none text-[19px] cursor-pointer flex items-center justify-center font-[inherit]">−</button>
+              <button onClick={() => changeDur(-1)} className="w-[44px] h-[44px] rounded-full bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-none text-[19px] cursor-pointer flex items-center justify-center font-[inherit]">−</button>
               <span className="text-[22px] font-extrabold text-[#1a1a2e] min-w-[28px] text-center">{ui.planDur}</span>
-              <button onClick={() => changeDur(1)} className="w-[34px] h-[34px] rounded-full bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-none text-[19px] cursor-pointer flex items-center justify-center font-[inherit]">+</button>
+              <button onClick={() => changeDur(1)} className="w-[44px] h-[44px] rounded-full bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-none text-[19px] cursor-pointer flex items-center justify-center font-[inherit]">+</button>
             </div>
           </div>
         </div>
@@ -128,8 +128,11 @@ export default function PlannerPage() {
             {ACT_OPTS.map(a => (
               <div
                 key={a.key}
+                role="button"
+                tabIndex={0}
                 onClick={() => toggleAct(a.key)}
-                className={`flex items-center gap-1 py-1.5 px-3 border-2 rounded-full cursor-pointer text-[13px] font-semibold transition-all ${
+                onKeyDown={(e) => e.key === 'Enter' && toggleAct(a.key)}
+                className={`flex items-center gap-1 py-[10px] px-3 border-2 rounded-full cursor-pointer text-[13px] font-semibold transition-all ${
                   ui.planActs.includes(a.key) ? 'border-[#667eea] bg-[#f3f0ff] text-[#667eea]' : 'border-[#e8e4ff] text-[#555]'
                 }`}
               >{a.label}</div>

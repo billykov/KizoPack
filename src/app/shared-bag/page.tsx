@@ -43,18 +43,21 @@ export default function SharedBagPage() {
           </div>
         )}
 
-        <button onClick={handleBack} className="inline-flex items-center gap-1.5 text-[#a78bfa] text-sm font-bold cursor-pointer bg-none border-none p-0 mb-4">← חזור</button>
+        <button onClick={handleBack} className="inline-flex items-center gap-1.5 text-[#a78bfa] text-sm font-bold cursor-pointer bg-none border-none p-0 mb-4">→ חזור</button>
 
         <h1 className="text-[21px] font-extrabold text-[#1a1a2e] mb-1">🎒 התיק המשותף</h1>
-        <p className="text-sm text-[#888] mb-5">פריטים שכולם משתמשים בהם</p>
+        <p className="text-sm text-[#6b6b6b] mb-5">פריטים שכולם משתמשים בהם</p>
 
         {/* Audience tabs */}
         <div className="flex gap-1.5 mb-3 flex-wrap">
           {(['all', 'adult', 'child', 'baby'] as AudFilter[]).map(aud => (
             <div
               key={aud}
+              role="button"
+              tabIndex={0}
               onClick={() => setUI({ sharedFilter: aud })}
-              className={`py-1 px-3 rounded-full border-2 text-xs font-bold cursor-pointer whitespace-nowrap transition-all ${
+              onKeyDown={(e) => e.key === 'Enter' && setUI({ sharedFilter: aud })}
+              className={`py-[10px] px-3 rounded-full border-2 text-xs font-bold cursor-pointer whitespace-nowrap transition-all ${
                 filter === aud
                   ? 'bg-[#f0a050] border-[#f0a050] text-white'
                   : 'border-[#ffd6b0] text-[#f0a050]'
@@ -69,7 +72,7 @@ export default function SharedBagPage() {
             <div
               key={item.id}
               onClick={() => toggleShared(item.id)}
-              className={`flex items-start gap-1.5 py-2 px-2.5 border-2 rounded-[11px] cursor-pointer transition-all hover:border-[#ffb347] ${
+              className={`flex items-start gap-1.5 py-3 px-2.5 border-2 rounded-[11px] cursor-pointer transition-all hover:border-[#ffb347] ${
                 item.sel ? 'border-[#f0a050] bg-[#fff9f5]' : 'border-[#ffd6b0]'
               }`}
             >
@@ -86,7 +89,7 @@ export default function SharedBagPage() {
         <div className="h-px bg-[#f0f0f0] my-4" />
 
         <button onClick={handleSave} className="w-full py-4 bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-none rounded-[14px] text-base font-bold cursor-pointer mb-2.5">
-          שמור →
+          שמור ←
         </button>
       </div>
     </div>

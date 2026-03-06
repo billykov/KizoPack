@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store';
 import { TYPE_LABELS } from '@/lib/constants';
@@ -8,6 +9,7 @@ export default function ProfilesPage() {
   const profiles      = useStore(s => s.profiles);
   const shared        = useStore(s => s.shared);
   const deleteProfile = useStore(s => s.deleteProfile);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const selShared = shared.filter(i => i.sel);
   const sharedPreview = selShared.length
@@ -17,15 +19,15 @@ export default function ProfilesPage() {
   return (
     <div className="min-h-[100dvh] flex items-start justify-center p-5">
       <div className="bg-white rounded-3xl p-7 max-w-[480px] w-full shadow-[0_20px_60px_rgba(0,0,0,0.2)] my-auto">
-        <button onClick={() => router.push('/home')} className="inline-flex items-center gap-1.5 text-[#a78bfa] text-sm font-bold cursor-pointer bg-none border-none p-0 mb-4">← חזור</button>
+        <button onClick={() => router.push('/home')} className="inline-flex items-center gap-1.5 text-[#a78bfa] text-sm font-bold cursor-pointer bg-none border-none p-0 mb-4">→ חזור</button>
 
         <h1 className="text-[21px] font-extrabold text-[#1a1a2e] mb-1">👨‍👩‍👧‍👦 בני המשפחה</h1>
-        <p className="text-sm text-[#888] mb-5">ניהול פרופילים</p>
+        <p className="text-sm text-[#6b6b6b] mb-5">ניהול פרופילים</p>
 
         {profiles.length === 0 ? (
           <div className="text-center py-7 px-4">
             <div className="text-[42px] mb-2.5">👨‍👩‍👧‍👦</div>
-            <div className="text-sm font-semibold text-[#bbb]">אין פרופילים עדיין</div>
+            <div className="text-sm font-semibold text-[#767676]">אין פרופילים עדיין</div>
           </div>
         ) : (
           profiles.map(p => (
@@ -39,14 +41,29 @@ export default function ProfilesPage() {
                 </div>
               </div>
               <div className="flex gap-1.5">
-                <button
-                  onClick={() => { useStore.getState().resetFormForEdit(p.id); useStore.getState().setUI({ callerRoute: '/profiles' }); router.push('/add-member'); }}
-                  className="w-[30px] h-[30px] rounded-lg bg-[#f3f0ff] flex items-center justify-center text-sm cursor-pointer hover:bg-[#ede9fe] transition-colors border-none"
-                >✏️</button>
-                <button
-                  onClick={() => deleteProfile(p.id)}
-                  className="w-[30px] h-[30px] rounded-lg bg-[#f3f0ff] flex items-center justify-center text-sm cursor-pointer hover:bg-[#ffe4e4] transition-colors border-none"
-                >🗑️</button>
+                {deletingId === p.id ? (
+                  <div className="flex gap-1.5">
+                    <button
+                      onClick={() => { deleteProfile(p.id); setDeletingId(null); }}
+                      className="text-xs font-bold text-white bg-[#ff6b6b] px-2 py-1 rounded-lg border-none cursor-pointer"
+                    >מחק</button>
+                    <button
+                      onClick={() => setDeletingId(null)}
+                      className="text-xs font-bold text-[#6b6b6b] bg-[#f3f0ff] px-2 py-1 rounded-lg border-none cursor-pointer"
+                    >ביטול</button>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => { useStore.getState().resetFormForEdit(p.id); useStore.getState().setUI({ callerRoute: '/profiles' }); router.push('/add-member'); }}
+                      className="w-[44px] h-[44px] rounded-lg bg-[#f3f0ff] flex items-center justify-center text-sm cursor-pointer hover:bg-[#ede9fe] transition-colors border-none"
+                    >✏️</button>
+                    <button
+                      onClick={() => setDeletingId(p.id)}
+                      className="w-[44px] h-[44px] rounded-lg bg-[#f3f0ff] flex items-center justify-center text-sm cursor-pointer hover:bg-[#ffe4e4] transition-colors border-none"
+                    >🗑️</button>
+                  </>
+                )}
               </div>
             </div>
           ))
@@ -54,13 +71,16 @@ export default function ProfilesPage() {
 
         {/* Add member row */}
         <div
+          role="button"
+          tabIndex={0}
           onClick={() => { useStore.getState().resetFormForAdd(); useStore.getState().setUI({ callerRoute: '/profiles' }); router.push('/add-member'); }}
+          onKeyDown={(e) => { if (e.key === 'Enter') { useStore.getState().resetFormForAdd(); useStore.getState().setUI({ callerRoute: '/profiles' }); router.push('/add-member'); } }}
           className="flex items-center gap-3.5 p-3.5 px-4 border-2 border-dashed border-[#c4b5fd] rounded-[18px] mb-2.5 cursor-pointer hover:border-[#667eea] hover:bg-[#f9f7ff] transition-all"
         >
           <div className="text-[22px] w-[52px] h-[52px] bg-[#f3f0ff] rounded-full flex items-center justify-center shrink-0">➕</div>
           <div>
             <div className="text-[15px] font-bold text-[#667eea]">הוסף בן/בת משפחה</div>
-            <div className="text-xs text-[#aaa] mt-0.5">הוספת פרופיל חדש</div>
+            <div className="text-xs text-[#767676] mt-0.5">הוספת פרופיל חדש</div>
           </div>
         </div>
 
@@ -75,9 +95,9 @@ export default function ProfilesPage() {
           <div className="flex-1">
             <div className="text-base font-extrabold text-[#1a1a2e]">התיק המשותף</div>
             <div className="text-xs text-[#f0a050] font-semibold mt-0.5">🌍 פריטים לכולם</div>
-            <div className="text-xs text-[#aaa] mt-0.5 overflow-hidden whitespace-nowrap text-ellipsis">{sharedPreview}</div>
+            <div className="text-xs text-[#767676] mt-0.5 overflow-hidden whitespace-nowrap text-ellipsis">{sharedPreview}</div>
           </div>
-          <div className="w-[30px] h-[30px] rounded-lg bg-[#f3f0ff] flex items-center justify-center text-sm">✏️</div>
+          <div className="w-[44px] h-[44px] rounded-lg bg-[#f3f0ff] flex items-center justify-center text-sm">✏️</div>
         </div>
       </div>
     </div>

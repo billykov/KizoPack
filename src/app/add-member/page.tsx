@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store';
 import { ITEM_LIB, CAT_LABELS, AUTO_ITEMS, DEFAULT_MULTI, EMOJIS } from '@/lib/constants';
@@ -24,6 +24,14 @@ export default function AddMemberPage() {
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customText, setCustomText] = useState('');
   const [showEmojiModal, setShowEmojiModal] = useState(false);
+
+  // Escape key closes emoji modal
+  useEffect(() => {
+    if (!showEmojiModal) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowEmojiModal(false); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [showEmojiModal]);
 
   function selectType(type: 'adult' | 'child' | 'baby') {
     const multi = DEFAULT_MULTI[type];
@@ -102,12 +110,12 @@ export default function AddMemberPage() {
         <button
           onClick={() => router.push(ui.callerRoute)}
           className="inline-flex items-center gap-1.5 text-[#a78bfa] text-sm font-bold cursor-pointer bg-none border-none p-0 mb-4"
-        >← חזור</button>
+        >→ חזור</button>
 
         <h1 className="text-[21px] font-extrabold text-[#1a1a2e] mb-1">
           {ui.editId ? '✏️ עריכת פרופיל' : '➕ הוספת בן משפחה'}
         </h1>
-        <p className="text-sm text-[#888] mb-5">פרופיל אישי לרשימת אריזה מותאמת</p>
+        <p className="text-sm text-[#6b6b6b] mb-5">פרופיל אישי לרשימת אריזה מותאמת</p>
 
         {/* Emoji picker */}
         <div className="text-center mb-5">
@@ -128,6 +136,7 @@ export default function AddMemberPage() {
             placeholder="למשל: אבא, מיכל, יובל..."
             className={`w-full py-3 px-[15px] border-2 rounded-xl text-base text-[#1a1a2e] outline-none transition-colors font-[inherit] ${nameErr ? 'border-[#ff6b6b]' : 'border-[#e8e4ff] focus:border-[#667eea]'}`}
           />
+          {nameErr && <p className="text-xs text-[#ff6b6b] mt-1 font-semibold">נא להזין שם</p>}
         </div>
 
         {/* Type */}
@@ -151,14 +160,14 @@ export default function AddMemberPage() {
         <div className="flex items-center gap-3.5 bg-[#f9f7ff] rounded-[14px] p-3 px-4 mb-4">
           <div className="flex-1">
             <div className="text-sm font-semibold text-[#333]">חליפות ביגוד ליום</div>
-            <div className={`text-[11px] mt-0.5 ${isAutoMulti && ui.formType !== 'adult' ? 'text-[#f59e0b]' : 'text-[#aaa]'}`}>
+            <div className={`text-[11px] mt-0.5 ${isAutoMulti && ui.formType !== 'adult' ? 'text-[#f59e0b]' : 'text-[#767676]'}`}>
               {isAutoMulti && ui.formType !== 'adult' ? 'עודכן אוטומטית ✨' : 'ברירת מחדל: 1.5 | תינוק: 3'}
             </div>
           </div>
           <div className="flex items-center gap-2.5">
-            <button onClick={() => changeMulti(-0.5)} className="w-[30px] h-[30px] rounded-full bg-[#667eea] text-white border-none text-lg cursor-pointer flex items-center justify-center leading-none">−</button>
+            <button onClick={() => changeMulti(-0.5)} className="w-[44px] h-[44px] rounded-full bg-[#667eea] text-white border-none text-lg cursor-pointer flex items-center justify-center leading-none">−</button>
             <span className={`text-xl font-extrabold min-w-[38px] text-center ${isAutoMulti && ui.formType !== 'adult' ? 'text-[#f59e0b]' : 'text-[#1a1a2e]'}`}>{ui.formMulti}</span>
-            <button onClick={() => changeMulti(0.5)}  className="w-[30px] h-[30px] rounded-full bg-[#667eea] text-white border-none text-lg cursor-pointer flex items-center justify-center leading-none">+</button>
+            <button onClick={() => changeMulti(0.5)}  className="w-[44px] h-[44px] rounded-full bg-[#667eea] text-white border-none text-lg cursor-pointer flex items-center justify-center leading-none">+</button>
           </div>
         </div>
 
@@ -178,19 +187,26 @@ export default function AddMemberPage() {
         {/* Divider */}
         <div className="h-px bg-[#f0f0f0] my-4" />
         <div className="text-[15px] font-extrabold text-[#1a1a2e] mb-1">📦 פריטים אישיים</div>
-        <div className="text-[13px] text-[#888] mb-3.5">בחר מה תמיד לוקחים</div>
+        <div className="text-[13px] text-[#6b6b6b] mb-3.5">בחר מה תמיד לוקחים</div>
 
-        {/* Category tabs */}
-        <div className="flex gap-1.5 flex-wrap mb-2.5">
-          {Object.entries(CAT_LABELS).map(([id, label]) => (
-            <div
-              key={id}
-              onClick={() => setUI({ formActiveCat: id })}
-              className={`py-1 px-2.5 rounded-full border-2 text-[11px] font-bold cursor-pointer whitespace-nowrap transition-all ${
-                ui.formActiveCat === id ? 'bg-[#667eea] border-[#667eea] text-white' : 'border-[#e8e4ff] text-[#888]'
-              }`}
-            >{label}</div>
-          ))}
+        {/* Category tabs with scroll fades */}
+        <div className="relative mb-2.5">
+          <div className="flex gap-1.5 overflow-x-auto py-2 no-scrollbar">
+            {Object.entries(CAT_LABELS).map(([id, label]) => (
+              <div
+                key={id}
+                role="button"
+                tabIndex={0}
+                onClick={() => setUI({ formActiveCat: id })}
+                onKeyDown={(e) => e.key === 'Enter' && setUI({ formActiveCat: id })}
+                className={`py-[10px] px-2.5 rounded-full border-2 text-[11px] font-bold cursor-pointer whitespace-nowrap transition-all ${
+                  ui.formActiveCat === id ? 'bg-[#667eea] border-[#667eea] text-white' : 'border-[#e8e4ff] text-[#6b6b6b]'
+                }`}
+              >{label}</div>
+            ))}
+          </div>
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-white to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-white to-transparent" />
         </div>
 
         {/* Items grid */}
@@ -202,7 +218,7 @@ export default function AddMemberPage() {
               <div
                 key={item.id}
                 onClick={() => toggleItem(item.id)}
-                className={`flex items-center gap-1.5 py-2 px-2.5 border-2 rounded-[11px] cursor-pointer transition-all hover:border-[#a78bfa] ${
+                className={`flex items-center gap-1.5 py-3 px-2.5 border-2 rounded-[11px] cursor-pointer transition-all hover:border-[#a78bfa] ${
                   isSel ? (isAuto ? 'border-[#f59e0b] bg-[#fef9ec]' : 'border-[#667eea] bg-[#f3f0ff]') : 'border-[#e8e4ff]'
                 }`}
               >
@@ -223,7 +239,7 @@ export default function AddMemberPage() {
                 <div
                   key={item.id}
                   onClick={() => toggleItem(item.id)}
-                  className={`flex items-center gap-1.5 py-2 px-2.5 border-2 rounded-[11px] cursor-pointer transition-all ${isSel ? 'border-[#667eea] bg-[#f3f0ff]' : 'border-[#e8e4ff]'}`}
+                  className={`flex items-center gap-1.5 py-3 px-2.5 border-2 rounded-[11px] cursor-pointer transition-all ${isSel ? 'border-[#667eea] bg-[#f3f0ff]' : 'border-[#e8e4ff]'}`}
                 >
                   <span className="text-[17px] shrink-0">📌</span>
                   <span className="text-xs font-semibold text-[#333] flex-1">{item.name}</span>
@@ -257,7 +273,7 @@ export default function AddMemberPage() {
         {/* Preview chips */}
         {ui.formSelItems.length > 0 && (
           <div className="bg-[#f9f7ff] rounded-[11px] p-2.5 px-3 mt-2">
-            <div className="text-[11px] text-[#aaa] font-bold mb-1.5">נבחרו:</div>
+            <div className="text-[11px] text-[#767676] font-bold mb-1.5">נבחרו:</div>
             <div className="flex flex-wrap gap-1">
               {ui.formSelItems.map(id => {
                 const item = getItem(id) || ui.formCustomItems.find(ci => ci.id === id);
@@ -276,28 +292,50 @@ export default function AddMemberPage() {
         <div className="h-px bg-[#f0f0f0] my-4" />
 
         <button onClick={handleSave} className="w-full py-4 bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white border-none rounded-[14px] text-base font-bold cursor-pointer">
-          {ui.editId ? 'שמור שינויים ✓' : 'שמור פרופיל →'}
+          {ui.editId ? 'שמור שינויים ✓' : 'שמור פרופיל ←'}
         </button>
       </div>
 
       {/* Emoji Modal */}
       {showEmojiModal && (
         <div className="fixed inset-0 bg-black/50 z-[200] flex items-center justify-center p-5">
-          <div className="bg-white rounded-[22px] p-5 w-full max-w-[360px] max-h-[80vh] overflow-y-auto">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="bg-white rounded-[22px] p-5 w-full max-w-[360px] max-h-[80vh] overflow-y-auto"
+            onKeyDown={(e) => {
+              if (e.key !== 'Tab') return;
+              const el = e.currentTarget;
+              const focusable = Array.from(el.querySelectorAll<HTMLElement>(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+              )).filter(x => !x.hasAttribute('disabled'));
+              if (!focusable.length) return;
+              const first = focusable[0];
+              const last = focusable[focusable.length - 1];
+              if (e.shiftKey) {
+                if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+              } else {
+                if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+              }
+            }}
+          >
             <div className="text-[15px] font-extrabold text-[#1a1a2e] mb-3 text-center">בחר אימוג&apos;י</div>
             {/* Category tabs */}
             <div className="flex gap-1.5 flex-wrap mb-3">
               {Object.entries(EMOJIS).map(([key, val]) => (
                 <div
                   key={key}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setUI({ emojiCat: key })}
-                  className={`py-1 px-2.5 rounded-full border-2 text-xs font-bold cursor-pointer transition-all ${ui.emojiCat === key ? 'bg-[#667eea] border-[#667eea] text-white' : 'border-[#e8e4ff] text-[#888]'}`}
+                  onKeyDown={(e) => e.key === 'Enter' && setUI({ emojiCat: key })}
+                  className={`py-1 px-2.5 rounded-full border-2 text-xs font-bold cursor-pointer transition-all ${ui.emojiCat === key ? 'bg-[#667eea] border-[#667eea] text-white' : 'border-[#e8e4ff] text-[#6b6b6b]'}`}
                 >
                   {key === 'people' ? '👨 אנשים' : key === 'animals' ? '🐶 חיות' : '😎 פרצופים'}
                 </div>
               ))}
             </div>
-            <div className="text-[10px] font-bold text-[#aaa] mb-1.5 tracking-widest">{EMOJIS[ui.emojiCat]?.label}</div>
+            <div className="text-[10px] font-bold text-[#767676] mb-1.5 tracking-widest">{EMOJIS[ui.emojiCat]?.label}</div>
             <div className="grid grid-cols-7 gap-0.5 mb-3">
               {(EMOJIS[ui.emojiCat]?.list || []).map(em => (
                 <span
@@ -307,7 +345,7 @@ export default function AddMemberPage() {
                 >{em}</span>
               ))}
             </div>
-            <button onClick={() => setShowEmojiModal(false)} className="w-full py-2.5 bg-gradient-to-br from-[#667eea] to-[#764ba2] border-none rounded-[11px] text-white font-bold text-sm cursor-pointer">✓ בחר</button>
+            <button autoFocus onClick={() => setShowEmojiModal(false)} className="w-full py-2.5 bg-gradient-to-br from-[#667eea] to-[#764ba2] border-none rounded-[11px] text-white font-bold text-sm cursor-pointer">✓ בחר</button>
           </div>
         </div>
       )}
